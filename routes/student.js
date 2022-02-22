@@ -1,15 +1,16 @@
 const { response } = require("express");
 var express = require("express");
 var studentRouter = express.Router();
-require("dotenv").config();
+const mongouri = require("../env");
 const mongodb = require("mongodb");
+const app = require("../app");
 const MongoClient = mongodb.MongoClient;
 
 //get route to show all student data
 studentRouter.get("/", async (req, res) => {
   let client = null;
   try {
-    client = await MongoClient.connect(process.env.mongouri);
+    client = await MongoClient.connect(mongouri);
     const db = await client.db("student-mentor");
     let document = await db.collection("student").find().toArray();
 
@@ -31,7 +32,7 @@ studentRouter.get("/", async (req, res) => {
 studentRouter.post("/addStudent", async (req, res) => {
   let client =null;
   try {
-    client = await MongoClient.connect(process.env.mongouri);
+    client = await MongoClient.connect(mongouri);
     const db = await client.db("student-mentor");
     let data = await db.collection("student").find().toArray();
     if(data.filter(res=>res._id===req.body._id).length>=1)
@@ -57,7 +58,7 @@ studentRouter.post("/addStudent", async (req, res) => {
 studentRouter.put("/changementor", async (req, res) => {
   let client =null;
   try {
-    client = await MongoClient.connect(process.env.mongouri);
+    client = await MongoClient.connect(mongouri);
     const db = await client.db("student-mentor");
     let oldone = await db
       .collection("mentor")
@@ -100,10 +101,11 @@ studentRouter.put("/changementor", async (req, res) => {
 studentRouter.get("/nomentorstudents", async (req, res) => {
   let client =null;
   try {
-    client = await MongoClient.connect(process.env.mongouri);
+    client = await MongoClient.connect(mongouri);
     const db = await client.db("student-mentor");
     let assignedStudents = await db.collection("mentor").distinct("students");
-    let allStudents = await db.collection("student").distinct("_id");
+    let allStudents = await db.collec
+    tion("student").distinct("_id");
     //Extracting non assigned mentor students
     let nonAssigned = allStudents.filter(stud=>!assignedStudents.includes(stud));
     let students = await db.collection("student").find().toArray();
@@ -123,5 +125,11 @@ studentRouter.get("/nomentorstudents", async (req, res) => {
     client.close();
   }
 });
+
+
+studentRouter.get("/abc",(req,res)=>{
+  console.log(mongouri);
+  res.send()
+})
 
 module.exports = studentRouter;

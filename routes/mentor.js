@@ -1,7 +1,7 @@
 var express = require('express');
 const res = require('express/lib/response');
 var mentorRouter = express.Router();
-require("dotenv").config();
+const mongouri = require("../env");
 const mongodb = require("mongodb");
 const MongoClient = mongodb.MongoClient;
 
@@ -10,7 +10,7 @@ mentorRouter.get('/',async (req,res)=>{
 
   let client =null;
   try {
-      client = await MongoClient.connect(process.env.mongouri);
+      client = await MongoClient.connect(mongouri);
       const db = await client.db('student-mentor');
       let document = await db.collection('mentor').find().toArray();
 
@@ -36,7 +36,7 @@ mentorRouter.post('/addMentor',async (req,res)=>{
 
     let client =null;
     try {
-      client = await MongoClient.connect(process.env.mongouri);
+      client = await MongoClient.connect(mongouri);
       const db = await client.db('student-mentor');
       let data = await db.collection("mentor").find().toArray();
       if(data.filter(res=>res._id===req.body._id).length>=1)
@@ -66,7 +66,7 @@ mentorRouter.post('/addMentor',async (req,res)=>{
 mentorRouter.get("/students/:id",async (req,res)=>{
     let client = null;
     try{
-      client = await MongoClient.connect(process.env.mongouri);
+      client = await MongoClient.connect(mongouri);
       const db = await client.db("student-mentor");
         let document = await db.collection('mentor').aggregate([
             {$match:{_id:`${req.params.id}`}}

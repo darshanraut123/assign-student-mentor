@@ -104,8 +104,7 @@ studentRouter.get("/nomentorstudents", async (req, res) => {
     client = await MongoClient.connect(mongouri);
     const db = await client.db("student-mentor");
     let assignedStudents = await db.collection("mentor").distinct("students");
-    let allStudents = await db.collec
-    tion("student").distinct("_id");
+    let allStudents = await db.collection("student").distinct("_id");
     //Extracting non assigned mentor students
     let nonAssigned = allStudents.filter(stud=>!assignedStudents.includes(stud));
     let students = await db.collection("student").find().toArray();
